@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
 
   // Define a type for a Todo item
   type Todo = {
@@ -9,24 +9,26 @@
 
   // Reactive state
   const todos = ref<Todo[]>([])
-  const newTodo = ref<string>('')
+  const newTodo = ref('')
+  const filter = ref<'all' | 'active' | 'completed'>('all')
 
   // Add a new todo
-  const addTodo = (): void => {
-    if (newTodo.value.trim() === '') return
-
-    todos.value.push({
-      text: newTodo.value,
-      done: false,
-    })
-
+  const addTodo = () => {
+    if (!newTodo.value.trim()) return
+    todos.value.push({ text: newTodo.value.trim(), done: false })
     newTodo.value = ''
   }
 
   // Remove a todo
-  const removeTodo = (index: number): void => {
+  const removeTodo = (index: number) => {
     todos.value.splice(index, 1)
   }
+
+  const filteredTodos = computed(() => {
+    if (filter.value === 'active') return todos.value.filter(t => !t.done)
+    if (filter.value === 'completed') return todos.value.filter(t => t.done)
+    return todos.value
+  })
 </script>
 
 <template>
@@ -49,12 +51,18 @@
 
         <v-divider class="my-4" />
 
+        <!-- Filter buttons -->
+        <v-btn-toggle v-model="filter" class="mb-4" mandatory>
+          <v-btn value="all">All</v-btn>
+          <v-btn value="active">Active</v-btn>
+          <v-btn value="completed">Completed</v-btn>
+        </v-btn-toggle>
+
         <v-list>
           <v-list-item
-            v-for="(todo, index) in todos"
+            v-for="(todo, index) in filteredTodos"
             :key="index"
             class="d-flex align-center justify-space-between"
-            slim
           >
             <template #prepend>
               <v-list-item-action start>
@@ -65,11 +73,14 @@
                   hide-details
                 >
                   <template #label>
-                    <span :class="{'text-decoration-line-through': todo.done}">{{ todo.text }}</span>
+                    <span :class="{'text-decoration-line-through': todo.done}">
+                      {{ todo.text }}
+                    </span>
                   </template>
                 </v-checkbox>
               </v-list-item-action>
             </template>
+
             <template #append>
               <v-btn color="error" icon @click="removeTodo(index)">
                 <v-icon icon="mdi-delete" />
