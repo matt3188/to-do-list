@@ -32,6 +32,12 @@
     newTodo.value = ''
   }
 
+  const clearTodos = () => {
+    if (confirm('Are you sure you want to clear all todos?')) {
+      todos.value = []
+    }
+  }
+
   // Remove a todo
   const removeTodo = (index: number) => {
     todos.value.splice(index, 1)
@@ -59,7 +65,8 @@
             hide-details
             label="Add a task..."
           />
-          <v-btn class="mt-2" color="primary" @click="addTodo">Add</v-btn>
+          <v-btn class="mt-2 mr-2" color="primary" @click="addTodo">Add</v-btn>
+          <v-btn class="mt-2" color="error" :disabled="!todos.length" @click="clearTodos">Clear all</v-btn>
         </v-form>
 
         <v-divider class="my-4" />
