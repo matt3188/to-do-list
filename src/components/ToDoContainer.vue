@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed, onMounted, ref, watch } from 'vue'
 
   // Define a type for a Todo item
   type Todo = {
@@ -11,6 +11,19 @@
   const todos = ref<Todo[]>([])
   const newTodo = ref('')
   const filter = ref<'all' | 'active' | 'completed'>('all')
+
+  // Save todos to localStorage whenever they change
+  watch(todos, (newTodos: Todo[]) => {
+    localStorage.setItem('todos', JSON.stringify(newTodos))
+  }, { deep: true })
+
+  // Load todos from localStorage when the component mounts
+  onMounted(() => {
+    const saved = localStorage.getItem('todos')
+    if(saved) {
+      todos.value = JSON.parse(saved) as Todo[]
+    }
+  })
 
   // Add a new todo
   const addTodo = () => {
