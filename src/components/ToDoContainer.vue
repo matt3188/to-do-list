@@ -21,7 +21,17 @@
   onMounted(() => {
     const saved = localStorage.getItem('todos')
     if(saved) {
-      todos.value = JSON.parse(saved) as Todo[]
+      // Check if what we're retrieving is a valid list of Todos
+      try {
+        const parsed = JSON.parse(saved)
+        if(Array.isArray(parsed) && parsed.every(item => typeof item.text === 'string' && typeof item.done === 'boolean')) {
+          todos.value = JSON.parse(saved) as Todo[]
+        } else {
+          console.warn('Invalid todos format in localStorage, ignoring it')
+        }
+      } catch (error) {
+        console.error('Failed to parse todos from localStorage:', error)
+      }
     }
   })
 
