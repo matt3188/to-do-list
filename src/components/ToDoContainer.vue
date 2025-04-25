@@ -1,63 +1,7 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { useTodos } from '@/composables/useTodos'
 
-  // Define a type for a Todo item
-  type Todo = {
-    text: string
-    done: boolean
-  }
-
-  // Reactive state
-  const todos = ref<Todo[]>([])
-  const newTodo = ref('')
-  const filter = ref<'all' | 'active' | 'completed'>('all')
-
-  // Save todos to localStorage whenever they change
-  watch(todos, (newTodos: Todo[]) => {
-    localStorage.setItem('todos', JSON.stringify(newTodos))
-  }, { deep: true })
-
-  // Load todos from localStorage when the component mounts
-  onMounted(() => {
-    const saved = localStorage.getItem('todos')
-    if(saved) {
-      // Check if what we're retrieving is a valid list of Todos
-      try {
-        const parsed = JSON.parse(saved)
-        if(Array.isArray(parsed) && parsed.every(item => typeof item.text === 'string' && typeof item.done === 'boolean')) {
-          todos.value = JSON.parse(saved) as Todo[]
-        } else {
-          console.warn('Invalid todos format in localStorage, ignoring it')
-        }
-      } catch (error) {
-        console.error('Failed to parse todos from localStorage:', error)
-      }
-    }
-  })
-
-  // Add a new todo
-  const addTodo = () => {
-    if (!newTodo.value.trim()) return
-    todos.value.push({ text: newTodo.value.trim(), done: false })
-    newTodo.value = ''
-  }
-
-  const clearTodos = () => {
-    if (confirm('Are you sure you want to clear all todos?')) {
-      todos.value = []
-    }
-  }
-
-  // Remove a todo
-  const removeTodo = (index: number) => {
-    todos.value.splice(index, 1)
-  }
-
-  const filteredTodos = computed(() => {
-    if (filter.value === 'active') return todos.value.filter(t => !t.done)
-    if (filter.value === 'completed') return todos.value.filter(t => t.done)
-    return todos.value
-  })
+  const { todos, newTodo, filter, filteredTodos, addTodo, clearTodos, removeTodo } = useTodos()
 </script>
 
 <template>
