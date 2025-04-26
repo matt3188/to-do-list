@@ -51,7 +51,7 @@
               </template>
             </v-checkbox>
 
-            <v-btn color="error" icon @click="removeTodo(index)">
+            <v-btn color="error" icon @click="removeTodo(todo.id)">
               <v-icon icon="mdi-delete" />
             </v-btn>
           </li>
