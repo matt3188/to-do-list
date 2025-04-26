@@ -32,37 +32,59 @@
           <v-btn value="completed">Completed</v-btn>
         </v-btn-toggle>
 
-        <v-list>
-          <v-list-item
-            v-for="(todo, index) in filteredTodos"
-            :key="index"
-            class="d-flex align-center justify-space-between"
+        <transition-group mode="out-in" name="list" tag="ul">
+          <li
+            v-for="todo in filteredTodos"
+            :key="todo.id"
+            class="todo-item d-flex align-center justify-space-between"
           >
-            <template #prepend>
-              <v-list-item-action start>
-                <v-checkbox
-                  v-model="todo.done"
-                  class="flex-grow-1"
-                  density="compact"
-                  hide-details
-                >
-                  <template #label>
-                    <span :class="{'text-decoration-line-through': todo.done}">
-                      {{ todo.text }}
-                    </span>
-                  </template>
-                </v-checkbox>
-              </v-list-item-action>
-            </template>
+            <v-checkbox
+              v-model="todo.done"
+              class="flex-grow-1"
+              density="compact"
+              hide-details
+            >
+              <template #label>
+                <span :class="{ 'text-decoration-line-through': todo.done }">
+                  {{ todo.text }}
+                </span>
+              </template>
+            </v-checkbox>
 
-            <template #append>
-              <v-btn color="error" icon @click="removeTodo(index)">
-                <v-icon icon="mdi-delete" />
-              </v-btn>
-            </template>
-          </v-list-item>
-        </v-list>
+            <v-btn color="error" icon @click="removeTodo(index)">
+              <v-icon icon="mdi-delete" />
+            </v-btn>
+          </li>
+        </transition-group>
+
       </v-card-text>
     </v-card>
   </v-container>
 </template>
+
+<style scoped>
+.todo-list-container {
+  position: relative;
+}
+
+.todo-item {
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 8px;
+  background-color: var(--v-surface);
+  border-radius: 8px;
+  box-sizing: border-box;
+  box-shadow: var(--v-shadow-2);
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+</style>

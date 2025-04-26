@@ -2,6 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { loadTodosFromStorage, saveTodosToStorage } from '@/utils/storage'
 import type { Todo } from '@/types/todo'
 import type { FilterType } from '@/types/filters'
+import { v4 as uuidv4 } from 'uuid'
 
 export function useTodos () {
   // Reactive state
@@ -17,7 +18,7 @@ export function useTodos () {
   // Add a new todo
   const addTodo = () => {
     if (!newTodo.value.trim()) return
-    todos.value.push({ text: newTodo.value.trim(), done: false })
+    todos.value.push({ id: uuidv4(), text: newTodo.value.trim(), done: false })
     newTodo.value = ''
   }
 
